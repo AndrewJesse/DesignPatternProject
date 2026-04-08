@@ -1,6 +1,6 @@
 from dataclasses import asdict
 
-from logic.transform import Payload
+from model.transform import Payload
 
 
 class InMemoryStore:

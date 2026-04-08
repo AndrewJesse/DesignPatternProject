@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from logic.transform import Payload
+from model.transform import Payload
 
 
 class DataSource(Protocol):

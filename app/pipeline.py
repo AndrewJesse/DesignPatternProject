@@ -1,6 +1,5 @@
-from logic.transform import Payload, normalize
-
-from application.ports import DataSource, DataSink
+from app.ports import DataSource, DataSink
+from model.transform import Payload, normalize
 
 
 def run(source: DataSource, sink: DataSink) -> Payload:

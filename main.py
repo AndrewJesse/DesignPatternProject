@@ -1,14 +1,6 @@
-from application.pipeline import run
-from logic.transform import Payload
-from persistence.memory import InMemoryStore
+"""Run from repo root: python main.py  (same as: python -m app)"""
 
-
-def main() -> None:
-    store = InMemoryStore()
-    store.write(Payload(text="  hello  "))
-    result = run(store, store)
-    print(result)
-
+from app.main import main
 
 if __name__ == "__main__":
     main()
