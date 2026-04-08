@@ -201,10 +201,6 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# Local runtime logs (directory tracked via log/.gitkeep)
-log/*
-!log/.gitkeep
-
 # Marimo
 marimo/_static/
 marimo/_lsp/
