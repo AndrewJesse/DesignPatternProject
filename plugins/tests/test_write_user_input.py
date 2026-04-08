@@ -1,6 +1,6 @@
 import unittest
 
-from plugins.memory import InMemoryStore
+from plugins.in_memory_store import InMemoryStore
 from app.memo_use_cases import write_user_input
 
 
