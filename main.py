@@ -1,5 +1,14 @@
-from app.memo_use_cases import write_user_input
-from plugins.sqlite_store import SqliteStore
+# Composition Root (aka "main" or "bootstrap").
+#
+# This is the ONLY place in the entire project that knows about concrete
+# adapters. It wires an adapter (SqliteStore) to the application layer's
+# use case (write_user_input) through the port (PayloadWriter protocol).
+#
+# In Ports & Adapters, the composition root sits OUTSIDE the hexagon.
+# It is not part of domain, application, or adapter layers — it just
+# assembles them together.
+from application.services import write_user_input
+from adapters.sqlite_store import SqliteStore
 
 
 def main() -> None:

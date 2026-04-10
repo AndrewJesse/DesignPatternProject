@@ -1,6 +1,11 @@
+# Adapter — In-memory output adapter.
+#
+# Implements the PayloadWriter port using a plain dict.
+# Primarily used as a test double so that use-case unit tests
+# can run without touching a real database.
 from dataclasses import asdict
 
-from model.transform import Payload
+from domain.transform import Payload
 
 
 class InMemoryStore:

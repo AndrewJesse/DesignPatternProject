@@ -1,9 +1,13 @@
+# Adapter — SQLite output adapter.
+#
+# Implements the PayloadWriter port for SQLite persistence.
+# This is a "driven" (secondary) adapter: the application drives it
+# through the port interface to persist data.
 from pathlib import Path
 import sqlite3
 
-from model.transform import Payload
+from domain.transform import Payload
 
-# All SQLite DDL and statements for this adapter live here.
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS payload (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
