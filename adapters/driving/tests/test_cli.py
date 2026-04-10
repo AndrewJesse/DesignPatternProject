@@ -1,25 +1,27 @@
 # Tests for the driving CLI adapter.
 #
-# Verifies that the CLI adapter correctly reads user input, passes it
-# through the use case, and prints the result — without real I/O.
+# Verifies the CLI adapter reads signals from mock CAN bus,
+# records them, and prints output — without real I/O.
 import unittest
-from unittest.mock import patch
 from io import StringIO
+from unittest.mock import patch
 
-from adapters.driven.in_memory_store import InMemoryStore
+from adapters.driven.in_memory_store import InMemorySignalStore
+from adapters.driven.mock_can_reader import MockCANReader
 from adapters.driving.cli import run
 
 
 class TestCliAdapter(unittest.TestCase):
-    @patch("builtins.input", return_value="  hello world  ")
     @patch("sys.stdout", new_callable=StringIO)
-    def test_run_writes_input_and_prints_result(self, mock_stdout, mock_input):
-        store = InMemoryStore()
-        run(store)
-        # The use case trims whitespace, so stored text should be trimmed
-        self.assertEqual(store.last().text, "hello world")
-        # Output should contain "Saved:"
-        self.assertIn("Saved:", mock_stdout.getvalue())
+    def test_run_reads_and_records_signals(self, mock_stdout):
+        store = InMemorySignalStore()
+        reader = MockCANReader()
+        run(store, reader)
+        # Should have recorded all 3 mock signals
+        self.assertEqual(store.last().name, "VehicleSpeed")
+        output = mock_stdout.getvalue()
+        self.assertIn("EngineSpeed", output)
+        self.assertIn("Done", output)
 
 
 if __name__ == "__main__":

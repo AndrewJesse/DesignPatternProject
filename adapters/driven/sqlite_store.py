@@ -1,23 +1,25 @@
-# Adapter — SQLite output adapter.
+# Adapter — SQLite signal store.
 #
-# Implements the PayloadWriter port for SQLite persistence.
+# Implements the SignalWriter port for SQLite persistence.
 # This is a "driven" (secondary) adapter: the application drives it
-# through the port interface to persist data.
+# through the port interface to persist vehicle signals.
 from pathlib import Path
 import sqlite3
 
-from domain.transform import Payload
+from domain.transform import VehicleSignal
 
 _SCHEMA_SQL = """
-CREATE TABLE IF NOT EXISTS payload (
+CREATE TABLE IF NOT EXISTS vehicle_signal (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    text TEXT NOT NULL,
-    date DATETIME NOT NULL
+    name TEXT NOT NULL,
+    value REAL NOT NULL,
+    unit TEXT NOT NULL,
+    timestamp DATETIME NOT NULL
 );
 """
 
 
-class SqliteStore:
+class SqliteSignalStore:
     def __init__(self, path: str = "app.db") -> None:
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(path)
@@ -27,9 +29,9 @@ class SqliteStore:
         self._conn.executescript(_SCHEMA_SQL)
         self._conn.commit()
 
-    def write(self, data: Payload) -> None:
+    def write(self, signal: VehicleSignal) -> None:
         self._conn.execute(
-            "INSERT INTO payload (text, date) VALUES (?, ?)",
-            (data.text, data.date),
+            "INSERT INTO vehicle_signal (name, value, unit, timestamp) VALUES (?, ?, ?, ?)",
+            (signal.name, signal.value, signal.unit, signal.timestamp),
         )
         self._conn.commit()

@@ -1,3 +1,3 @@
-from .ports import PayloadWriter
+from .ports import SignalWriter, SignalReader
 
-__all__ = ["PayloadWriter"]
+__all__ = ["SignalWriter", "SignalReader"]

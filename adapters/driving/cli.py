@@ -2,14 +2,15 @@
 #
 # A driving adapter sits on the LEFT side of the hexagon: it receives
 # user input and DRIVES the application through its use-case API.
-#
-# This adapter knows about the application layer (use cases) but the
-# application layer never knows about this adapter.
-from application.services import write_user_input
-from application.ports import PayloadWriter
+# In a real instrument cluster this would be a Qt GUI adapter.
+from application.services import record_signal, read_next_signal
+from application.ports import SignalWriter, SignalReader
 
 
-def run(writer: PayloadWriter) -> None:
-    user_text = input("Enter text: ")
-    result = write_user_input(writer, user_text)
-    print(f"Saved: {result}")
+def run(writer: SignalWriter, reader: SignalReader) -> None:
+    # Read signals from the data source (e.g. CAN bus)
+    print("--- Reading signals from bus ---")
+    while (signal := read_next_signal(reader)) is not None:
+        record_signal(writer, signal.name, signal.value, signal.unit)
+        print(f"  Recorded: {signal.name} = {signal.value} {signal.unit}")
+    print("--- Done ---")

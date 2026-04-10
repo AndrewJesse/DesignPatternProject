@@ -1,40 +1,39 @@
 # Integration tests for the SQLite adapter.
 #
-# These verify the concrete adapter actually reads/writes to a real
-# SQLite database. In Ports & Adapters, integration tests target the
-# outermost ring to prove the adapter fulfills the port contract.
+# Verifies the concrete adapter reads/writes to a real SQLite database.
 import os
 import tempfile
 import unittest
 
-from adapters.driven.sqlite_store import SqliteStore
-from domain.transform import Payload
+from adapters.driven.sqlite_store import SqliteSignalStore
+from domain.transform import VehicleSignal
 
 
-class TestSqliteStore(unittest.TestCase):
+class TestSqliteSignalStore(unittest.TestCase):
     def setUp(self) -> None:
         self._tmp = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
         self._tmp.close()
-        self.store = SqliteStore(self._tmp.name)
+        self.store = SqliteSignalStore(self._tmp.name)
 
     def tearDown(self) -> None:
         os.unlink(self._tmp.name)
 
-    def test_write_persists_payload(self) -> None:
-        payload = Payload(text="hello", date="2026-01-01T00:00:00")
-        self.store.write(payload)
+    def test_write_persists_signal(self) -> None:
+        signal = VehicleSignal(name="EngineSpeed", value=1200.0, unit="rpm", timestamp="2026-01-01T00:00:00")
+        self.store.write(signal)
 
-        cur = self.store._conn.execute("SELECT text, date FROM payload")
+        cur = self.store._conn.execute("SELECT name, value, unit, timestamp FROM vehicle_signal")
         row = cur.fetchone()
         self.assertIsNotNone(row)
-        self.assertEqual(row[0], "hello")
-        self.assertEqual(row[1], "2026-01-01T00:00:00")
+        self.assertEqual(row[0], "EngineSpeed")
+        self.assertEqual(row[1], 1200.0)
+        self.assertEqual(row[2], "rpm")
 
-    def test_write_multiple_payloads(self) -> None:
-        self.store.write(Payload(text="a", date="2026-01-01T00:00:00"))
-        self.store.write(Payload(text="b", date="2026-01-02T00:00:00"))
+    def test_write_multiple_signals(self) -> None:
+        self.store.write(VehicleSignal(name="EngineSpeed", value=1200.0, unit="rpm", timestamp="2026-01-01T00:00:00"))
+        self.store.write(VehicleSignal(name="CoolantTemp", value=92.5, unit="°C", timestamp="2026-01-01T00:00:01"))
 
-        cur = self.store._conn.execute("SELECT COUNT(*) FROM payload")
+        cur = self.store._conn.execute("SELECT COUNT(*) FROM vehicle_signal")
         self.assertEqual(cur.fetchone()[0], 2)
 
 

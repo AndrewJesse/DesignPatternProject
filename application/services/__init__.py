@@ -1,3 +1,3 @@
-from .memo_use_cases import write_user_input
+from .memo_use_cases import record_signal, read_next_signal
 
-__all__ = ["write_user_input"]
+__all__ = ["record_signal", "read_next_signal"]

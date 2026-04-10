@@ -1,23 +1,26 @@
 # Application Layer — Use Cases (Services).
 #
 # Use cases orchestrate the flow of data to and from domain entities
-# through ports. They answer "WHAT does the app do?" but not "HOW is
-# data stored or retrieved?" — that detail is behind the port.
-#
-# Use cases depend on:
-#   - domain objects (Payload)
-#   - port interfaces (PayloadWriter)
-# They NEVER depend on concrete adapters.
+# through ports.  They answer "WHAT does the app do?" but not "HOW
+# is data stored or read?" — that detail is behind the port.
 from datetime import datetime
 
-from ..ports import PayloadWriter
-from domain.transform import Payload
+from ..ports import SignalWriter, SignalReader
+from domain.transform import VehicleSignal
 
 
-def write_user_input(writer: PayloadWriter, user_text: str) -> Payload:
-    payload = Payload(
-        text=user_text.strip(),
-        date=datetime.now().isoformat(timespec="seconds"),
+def record_signal(writer: SignalWriter, name: str, value: float, unit: str) -> VehicleSignal:
+    """Accept a signal reading and persist it through the writer port."""
+    signal = VehicleSignal(
+        name=name.strip(),
+        value=value,
+        unit=unit.strip(),
+        timestamp=datetime.now().isoformat(timespec="seconds"),
     )
-    writer.write(payload)
-    return payload
+    writer.write(signal)
+    return signal
+
+
+def read_next_signal(reader: SignalReader) -> VehicleSignal | None:
+    """Read the next available signal from the reader port."""
+    return reader.read()

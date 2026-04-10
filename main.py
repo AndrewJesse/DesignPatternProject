@@ -1,21 +1,19 @@
 # Composition Root (aka "main" or "bootstrap").
 #
-# This is the ONLY place in the entire project that knows about BOTH
-# concrete adapters — the driven adapter (SqliteStore for persistence)
-# and the driving adapter (cli for user interaction).
-#
-# It wires them together through the port (PayloadWriter protocol).
+# The ONLY place that knows about concrete adapters.
+# Wires a driven SignalReader (mock CAN bus) and a driven SignalWriter
+# (SQLite store) to the driving adapter (CLI).
 #
 # In Ports & Adapters, the composition root sits OUTSIDE the hexagon.
-# It is not part of domain, application, or adapter layers — it just
-# assembles them together.
-from adapters.driven.sqlite_store import SqliteStore
+from adapters.driven.sqlite_store import SqliteSignalStore
+from adapters.driven.mock_can_reader import MockCANReader
 from adapters.driving.cli import run as run_cli
 
 
 def main() -> None:
-    store = SqliteStore("data/data.db")   # driven adapter (right side)
-    run_cli(store)                         # driving adapter (left side)
+    writer = SqliteSignalStore("data/signals.db")  # driven adapter (right side)
+    reader = MockCANReader()                        # driven adapter (right side)
+    run_cli(writer, reader)                         # driving adapter (left side)
 
 
 if __name__ == "__main__":

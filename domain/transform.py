@@ -1,9 +1,7 @@
 # Domain Layer — pure data structures and business rules.
 #
-# In Clean Architecture this is the innermost layer, independent of
-# everything else.  In Cockburn's hexagonal architecture, domain is
-# simply part of "the application" — but kept in its own top-level
-# folder here so the dependency rule is enforced by structure:
+# Domain objects model the instrument cluster's core concepts.
+# They have ZERO dependencies on ports, adapters, or frameworks.
 #
 #   domain/  ← depends on nothing
 #   application/  ← depends on domain
@@ -12,6 +10,9 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Payload:
-    text: str = ""
-    date: str | None = None
+class VehicleSignal:
+    """A single vehicle signal reading (e.g. EngineSpeed, CoolantTemp)."""
+    name: str = ""
+    value: float = 0.0
+    unit: str = ""
+    timestamp: str | None = None
